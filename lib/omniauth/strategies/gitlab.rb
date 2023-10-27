@@ -7,8 +7,17 @@ module OmniAuth
 
       args %i[client_id client_secret]
 
-      option :client_options, site: 'https://gitlab.com'
+      option :client_options, {
+        site: "https://gitlab.com",
+        authorize_url: "/oauth/authorize",
+        token_url: "/oauth/token",
+        response_type: 'code',
+      }
 
+      option :auth_token_params, {
+        grant_type: 'authorization_code',
+      }
+      
       option :redirect_url
 
       # When `true`, client_id and client_secret are returned in extra['raw_info'].
@@ -37,7 +46,9 @@ module OmniAuth
             env['omniauth.params']['client_id'],
             env['omniauth.params']['client_secret'],
             site: env['omniauth.params']['site'],
-            connection_opts: { proxy: env['omniauth.strategy'].options&.client_options&.proxy },
+            authorize_url: options.client_options.authorize_url,
+            token_url: options.client_options.token_url,
+            connection_opts: { proxy: env['omniauth.strategy'].options.client_options.proxy },
           )
           client.auth_code.get_token(verifier, {:redirect_uri => callback_url}.merge(token_params.to_hash(:symbolize_keys => true)), deep_symbolize(options.auth_token_params))
         else
