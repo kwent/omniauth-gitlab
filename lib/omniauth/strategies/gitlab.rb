@@ -32,12 +32,12 @@ module OmniAuth
       def build_access_token
         verifier = request.params["code"]
         # Override regular client when using setup: proc
-        if env['omniauth.params']['client_id'] && env['omniauth.params']['client_secret'] && env['omniauth.params'].dig('client_options', 'site')
+        if env['omniauth.params']['client_id'] && env['omniauth.params']['client_secret'] && env['omniauth.params']['site']
           client = ::OAuth2::Client.new(
             env['omniauth.params']['client_id'],
             env['omniauth.params']['client_secret'],
-            site: env['omniauth.params']['client_options']['site'],
-            connection_opts: { proxy: env['omniauth.params'].dig('client_options', 'proxy') },
+            site: env['omniauth.params']['site'],
+            connection_opts: { proxy: env['omniauth.strategy'].options&.client_options&.proxy },
           )
           client.auth_code.get_token(verifier, {:redirect_uri => callback_url}.merge(token_params.to_hash(:symbolize_keys => true)), deep_symbolize(options.auth_token_params))
         else
