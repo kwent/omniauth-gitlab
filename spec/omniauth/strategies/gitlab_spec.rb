@@ -52,7 +52,7 @@ describe OmniAuth::Strategies::GitLab do
   describe '#raw_info' do
     it 'sent request to current user endpoint' do
       expect(access_token).to receive(:get).with('api/v4/user').and_return(response)
-      expect(subject.raw_info).to eq(parsed_response)
+      expect(subject.raw_info).to eq(user: parsed_response)
     end
   end
 
